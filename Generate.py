@@ -33,13 +33,6 @@ def RMMEDA_operator(PopDec, K, M, XLow, XUpp):
         upp = np.tile(XUpp, (NN, 1))
         lbnd = OffspringDec <= low
         ubnd = OffspringDec >= upp
-        # print OffspringDec
-        # print lbnd
-        # print ubnd
-        # input()
         OffspringDec[lbnd] = 0.5 * (PopDec[lbnd] + low[lbnd])
         OffspringDec[ubnd] = 0.5 * (PopDec[ubnd] + upp[ubnd])
-
     return OffspringDec
-
-# RMMEDA_operator(PopDec,K,M)

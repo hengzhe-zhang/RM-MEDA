@@ -6,12 +6,12 @@ from pygmo.core import fast_non_dominated_sorting, select_best_N_mo
 from Generate import *
 
 
-class rm_meda(pg.algorithm):
+class rm_meda():
     """
     A custom steady-state algorithm, based on the hypervolume computation.
     """
 
-    def __init__(self, gen=20, K=5):
+    def __init__(self, gen=20, K=5, verbose=False):
         """
         Constructs an instance of the algorithm.
 
@@ -20,18 +20,16 @@ class rm_meda(pg.algorithm):
         NOTE: Evolves the population using the least contributor feature.
 
         * gen: number of generations
-        * n: the number of solutions to be sampled by the copula
+        * K: the number of manifolds
         """
         # We start by calling the base constructor
         super(rm_meda, self).__init__()
         # Store the number of generations
         self.__gen = gen
         self.__K = K
+        self.verbose = verbose
 
     def get_all_vectors_and_fitness(self, pop):
-        prob = pop.problem
-        dim, cont_dim, n_obj = prob.get_ncx(), prob.get_ncx() - prob.get_nix(), prob.get_nobj()
-        lb, ub = prob.get_bounds()
         all_elements = []
         all_fitness = []
         lnp = len(pop)
@@ -59,12 +57,10 @@ class rm_meda(pg.algorithm):
         if len(pop) == 0:
             return pop
         lnp = len(pop)
-        prob = pop.problem
-        dim, cont_dim, n_obj = prob.get_ncx(), prob.get_ncx() - prob.get_nix(), prob.get_nobj()
-        lb, ub = prob.get_bounds()
         # Main loop of the algorithm
         for s in range(self.__gen):
-            print('Generation: ', s)
+            if self.verbose:
+                print('Generation: ', s)
             self.genidx = s
             new_pop = self.Modeling(pop)
             for new_x in new_pop:
@@ -72,17 +68,10 @@ class rm_meda(pg.algorithm):
                     pop.push_back(new_x)
                 except ValueError:  # we don't add the solution if it violates the constraints
                     pass
-            pf = fast_non_dominated_sorting(pop.get_f())[0]
             temp_pop = pg.population(pop.problem, 0)
             for id in fast_non_dominated_sorting(pop.get_f())[3].argsort()[:lnp]:
                 temp_pop.push_back(x=pop.get_x()[id], f=pop.get_f()[id])
             pop = temp_pop
-            generation = 1
-        #         pop.plot_pareto_fronts()
-        #         plt.savefig('./IMG/fig'+str(s)+'.png')
-
-        #       moea_instance_tmp =  algorithm.nsga_II(gen = 1)
-        #       pop= moea_instance_tmp.evolve(pop)
         return pop
 
     def get_name(self):

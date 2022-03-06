@@ -20,7 +20,7 @@ def LocalPCA(PopDec, M, K):
 
     ## Modeling
     for iteration in range(1, 50):
-        # Calculte the distance between each solution and its projection in
+        # Calculate the distance between each solution and its projection in
         # affine principal subspace of each cluster
         distance = np.zeros((N, K))  # matrix of zeros N*K
         for k in range(K):
